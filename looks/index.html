@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwissFru: three looks</title>
+<style>
+  :root{color-scheme:light}
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif;background:#eceef2;color:#1b2130}
+  header{position:sticky;top:0;z-index:5;background:#14264f;color:#fff;padding:14px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+  header h1{font-size:1.05rem;margin:0;font-weight:600}
+  .picks{display:flex;gap:8px;flex-wrap:wrap}
+  .picks button{min-height:48px;padding:0 18px;border-radius:10px;border:1.5px solid rgba(255,255,255,.35);background:transparent;color:#fff;font:inherit;font-weight:600;cursor:pointer}
+  .picks button[aria-pressed="true"]{background:#dfc37e;border-color:#dfc37e;color:#14264f}
+  .picks button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  main{padding:20px;max-width:1500px;margin:0 auto}
+  .lead{margin:0 0 6px;font-size:1.25rem;font-weight:700}
+  .sub{margin:0 0 18px;color:#4a5568;max-width:70ch}
+  .stage{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:24px;align-items:start}
+  .frame{background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(20,38,79,.14);overflow:hidden}
+  .frame h2{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;margin:0;padding:10px 14px;color:#4a5568;border-bottom:1px solid #e4e7ec;display:flex;justify-content:space-between;gap:10px;align-items:center}
+  .frame h2 a{color:#294c92;text-transform:none;letter-spacing:0;font-weight:600}
+  .lap{position:relative;width:100%;aspect-ratio:1440/900;overflow:hidden}
+  .lap iframe{position:absolute;top:0;left:0;width:1440px;height:900px;border:0;transform-origin:0 0}
+  .ph iframe{display:block;width:390px;height:780px;border:0}
+  .how{margin:18px 0 0;padding:14px 16px;background:#fff;border-radius:12px;color:#4a5568}
+  .how b{color:#1b2130}
+  @media (max-width:1000px){.stage{grid-template-columns:1fr}.ph{max-width:390px;margin:0 auto}.ph iframe{width:100%}}
+</style>
+</head>
+<body>
+<header>
+  <h1>SwissFru: three looks for your system</h1>
+  <div class="picks" role="group" aria-label="Choose a preview">
+    <button type="button" data-f="A-glass.html" data-n="A, Glass" data-d="Frosted glass tiles over blue and gold light. Warm and rich.">A, Glass</button>
+    <button type="button" data-f="B-night.html" data-n="B, Night" data-d="Near-black, one SwissFru blue block, gold accents. Sharp and modern.">B, Night</button>
+    <button type="button" data-f="C-brief.html" data-n="C, Morning brief" data-d="Ivory paper, a written brief leading the page. Calm and premium.">C, Morning brief</button>
+  </div>
+</header>
+<main>
+  <p class="lead" id="name"></p>
+  <p class="sub" id="desc"></p>
+  <div class="stage">
+    <section class="frame">
+      <h2>Laptop <a id="openL" target="_blank" rel="noopener">Open full size</a></h2>
+      <div class="lap" id="lap"><iframe id="fl" title="Laptop preview"></iframe></div>
+    </section>
+    <section class="frame ph">
+      <h2>Phone</h2>
+      <iframe id="fp" title="Phone preview"></iframe>
+    </section>
+  </div>
+  <p class="how"><b>Try it in each frame:</b> scroll, then press "Open" on the pistachio paste row to go to Raw materials. Tap a material, then press the order button. The buttons at the top switch the look.</p>
+  <p class="how"><b>None of these?</b> Tell us how you want it to look, and it will be made to fit you: your colours, your layout, what you see first each morning. Sample data throughout.</p>
+</main>
+<script>
+  var fl = document.getElementById('fl'), fp = document.getElementById('fp'), lap = document.getElementById('lap');
+  function fit(){ fl.style.transform = 'scale(' + (lap.clientWidth / 1440) + ')'; }
+  function pick(b){
+    document.querySelectorAll('.picks button').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+    var f = b.dataset.f + '?t=' + Date.now();
+    fl.src = f + '#home'; fp.src = f + '#home';
+    document.getElementById('openL').href = b.dataset.f;
+    document.getElementById('name').textContent = b.dataset.n;
+    document.getElementById('desc').textContent = b.dataset.d;
+    try { history.replaceState(null, '', '#' + b.dataset.f.charAt(0)); } catch (e) {}
+  }
+  document.querySelectorAll('.picks button').forEach(function(b){ b.addEventListener('click', function(){ pick(b); }); });
+  window.addEventListener('resize', fit);
+  var start = (location.hash || '#A').charAt(1).toUpperCase();
+  var first = Array.prototype.find.call(document.querySelectorAll('.picks button'), function(b){ return b.dataset.f.charAt(0) === start; }) || document.querySelector('.picks button');
+  fit(); pick(first);
+</script>
+</body>
+</html>
